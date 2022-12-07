@@ -51,7 +51,7 @@ html {
 
 .card-img-top {
     width:100%;
-    max-height: 30%;
+    max-height: 8em;
 }
 .form-signin {
     width: 100%;
