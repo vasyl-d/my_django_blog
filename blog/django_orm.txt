@@ -1,0 +1,332 @@
+QuerySet и DjangoORM
+ВНИМАНИЕ! В ДАННОМ РАЗДЕЛЕ РЕЧЬ ПОЙДЕТ О РАБОТЕ С БАЗОЙ ДАННЫХ
+
+Как и все в IT, базы данных это одновременно и легко и тяжело. Если говорить о математической теориии реляционных баз данных, то это тяжело, а если вам надо научиться строить простенькие запросы к БД, то это очень легко.
+
+Вот курсы на stepik, которые я рекомендую:
+
+Введение в базы данных - хороший курс. тут кстати и про Django ORM рассказывают
+Работа с СУБД - курс про Django и вот тут именно про работу с СУБД
+Тут еще куча курсов
+Django ORM (Object Relational Mapping) является одной из самых мощных особенностей Django. Это позволяет нам взаимодействовать с базой данных, используя код Python, а не SQL.
+
+Если у вас есть элементарные представления о том, что такое язык SQL, то давайте создадим таблицу Person
+
+CREATE TABLE Person (
+    id int,
+    name varchar(50),
+    age int NOT NULL,
+    gender varchar(10),
+);
+Person ER Diagram
+
+У этой таблицы, как видно из рисунка и из кода, есть 4 колонки - id, name, age, gender.
+
+id - это уникальный идентификатор, каждой записи в данной таблице. Он должен быть уникальным.
+name - это текстовое поле максимальной длинной 50 символов.
+age - это число. Это поле не может быть пустым.
+gender - это текстовое поле максимальной длинной 10 символов.
+
+Давайте туже самую таблицу реализуем как модель Dajngo:
+
+class Person(models.Model):
+    name = models.CharField(max_length=50, blank=True)
+    age = models.IntegerField()
+    gender = models.CharField(max_length=10, blank=True)
+Все тоже самое, единственное отличие только то, что Django автоматически создает для каждой модели id поле и его явно не нужно указывать, только если не хотите его переопределить на какое-нибудь другое поле.
+
+Мы уже говорили с вами про поля моделей. Давайте сравним их с типами данных в SQL
+
+SQL	Django
+INT	IntegerField()
+VARCHAR(n)	CharField(max_length=n)
+TEXT	TextField()
+FLOAT(n)	FloatField()
+DATE	DateField()
+TIME	TimeField()
+DATETIME	DateTimeField()
+Сравнение запросов к БД
+Получить ве записи
+SQL
+
+SELECT * FROM Person;
+Этот запрос вернет все записи из таблицы Person со всеми полями *. Результат работы SQL запроса -это выборка, некий набор данных из БД.
+
+Django
+
+persons = Person.objects.all()
+Это тот же самый запрос, только с исползованием Django ORM. Это QuerySet. Отличие от выборки в SQL заключатеся в том, что QuerySet может быть создан, отфильтрован, нарезан и, как правило, передан без фактического запроса к базе данных. Так же QuerySet это итерируемый объект и мы можем притерировать каждую запись, если мы хотим обработать каждую запись в отдельности:
+
+for person in persons:
+    print(person.name)
+    print(person.gender)
+    print(person.age)
+Получить определенные столбцы
+SQL
+
+SELECT name, age FROM Person;
+Данный запрос вернет все записи из таблицы Person но в результате будут только столбцы name и age.
+
+Django
+
+Person.objects.only('name', 'age')
+То же самое.
+
+Только уникальные значения определенных колонок
+SQL
+
+SELECT DISTINCT name, age FROM Person;
+Вернет все записи с уникальными значениями в колонках name и age
+
+Django
+
+Person.objects.values('name', 'age').distinct()
+То же самое.
+
+Только определенное кол-во записей
+SQL
+
+SELECT * FROM Person LIMIT 10;
+Вернет 10 первых записей из таблицы.
+
+Django
+
+Person.objects.all()[:10]
+Определенное кол-во строк через какой-то промежуток
+SQL
+
+SELECT * FROM Person OFFSET 5 LIMIT 5;
+Вернет первые 5 записей, но прежде он пропустит 5 первых записей. Т.е. по сути, он пропускает первые 5 записей и берет 5 записей после них начиная с 6й.
+
+Django
+
+Person.objects.all()[5:10]
+Аналог WHERE в Django
+SQL
+
+SELECT * FROM Person WHERE id = 1;
+Вернет одну запись у которой id = 1.
+
+Django
+
+Person.objects.filter(id=1)
+Больше, меньше, больше или равно, меньше или равно, неравно
+SQL
+
+WHERE age > 18;
+WHERE age >= 18;
+WHERE age < 18;
+WHERE age <= 18;
+WHERE age != 18;
+Добавля в конце вашего запроса эти выражения вы можете фильтровать результаты
+
+Django
+
+Person.objects.filter(age__gt=18)
+Person.objects.filter(age__gte=18)
+Person.objects.filter(age__lt=18)
+Person.objects.filter(age__lte=18)
+Person.objects.exclude(age=18)
+Оператор BETWEEN
+SQL
+
+SELECT * FROM Person WHERE age BETWEEN 10 AND 20;
+Данный запрос вернет записи в которых age между 10 и 20.
+
+Django
+
+Person.objects.filter(age__range=(10, 20))
+Оператор LIKE
+SQL
+
+HERE name like '%A%';
+WHERE name like binary '%A%';
+WHERE name like 'A%';
+WHERE name like binary 'A%';
+WHERE name like '%A';
+WHERE name like binary '%A';
+LIKE оператор используется в связке с WHERE и предназначен для поиска по шаблону.
+
+Django
+
+Person.objects.filter(name__icontains='A')
+Person.objects.filter(name__contains='A')
+Person.objects.filter(name__istartswith='A')
+Person.objects.filter(name__startswith='A')
+Person.objects.filter(name__iendswith='A')
+Person.objects.filter(name__endswith='A')
+То же самое.
+
+Оператор IN
+SQL
+
+WHERE id in (1, 2);
+Оператор IN позволяет определить, совпадает ли значение объекта со значением в списке. Используется с WHERE.
+
+Django
+
+Person.objects.filter(id__in=[1, 2])
+AND, OR и NOT операторы
+SQL
+
+WHERE gender='male' AND age > 25;
+Логическое И вернет записи где gender = male И возраст больше 25
+
+Django
+
+Person.objects.filter(gender='male', age__gt=25)
+SQL
+
+WHERE gender='male' OR age > 25;
+Логическое ИЛИ вернет записи где gender male ИЛИ возвраст больше 25.
+
+Django
+
+from django.db.models import Q
+Person.objects.filter(Q(gender='male') | Q(age__gt=25))
+Немного громоздко, но у всего есть свои плюсы и минусы.
+
+SQL
+
+WHERE NOT gender='male';
+Логическое НЕ. Вернет все записи где genre НЕ male.
+
+Person.objects.exclude(gender='male')
+ NULL значение
+SQL
+
+WHERE age is NULL;
+WHERE age is NOT NULL;
+Врнет где age равно null (типа пустое) или наоборот, где не пустое.
+
+Django
+
+Person.objects.filter(age__isnull=True)
+Person.objects.filter(age__isnull=False)
+
+# Еще один вариант
+Person.objects.filter(age=None)
+Person.objects.exclude(age=None)
+Ключевое слово ORDER BY
+SQL
+
+SELECT * FROM Person order by age;
+Вернет все записи отсортированные по age
+
+Django
+
+Person.objects.order_by('age')
+SQL
+
+SELECT * FROM Person ORDER BY age DESC;
+Сделает тоже самое, но отсортирует по убыванию.
+
+Django
+
+Person.objects.order_by('-age')
+Создание записи в таблице или моделе
+SQL
+
+INSERT INTO Person VALUES ('Jack', '23', 'male');
+СОздаст новую запись в таблице Person с указанными данными.
+
+Django
+
+Person.objects.create(name='jack', age=23, gender='male)
+Обновление записи в моделе или таблице
+SQL
+
+UPDATE Person SET age = 20 WHERE id = 1;
+Обновляет запись в таблице Person устанавливает age в значение 1 где id = 1. По сути обновится одна запись у которой id = 1 так как id у каждой записи уникальный.
+
+Django
+
+person = Person.objects.get(id=1)
+person.age = 20
+person.save()
+Обновление сразу нескольких записей в таблице или моделе
+SQL
+
+UPDATE Person SET age = age * 1.5;
+Обновляет все записи в таблице Person умножая значение записанное в колонке age на 1.5
+
+Django
+
+from django.db.models import F
+
+Person.objects.update(age=F('age')*1.5)
+Удаление записей
+SQL
+
+DELETE FROM Person;
+Удаляет все записи в таблице Person
+
+Django
+
+Person.objects.all().delete()
+Удаление определенных строки
+
+SQL
+
+DELETE FROM Person WHERE age < 10;
+Удаляет строки из таблицы Person где age меньше 10.
+
+Django
+
+Person.objects.filter(age__lt=10).delete()
+Агрегация данных функция MIN
+SQL
+
+SELECT MIN(age) FROM Person;
+Вернет минимальное значение столбца age
+
+Django
+
+>>> from django.db.models import Min
+>>> Person.objects.all().aggregate(Min('age'))
+{'age__min': 0}
+Агрегация данных функция MAX
+SQL
+
+SELECT MAX(age) FROM Person;
+Вернет максимальное значение столбца age
+
+Django
+
+>>> from django.db.models import Max
+>>> Person.objects.all().aggregate(Max('age'))
+{'age__max': 100}
+Агрегация данных функция AVG
+SQL
+
+SELECT AVG(age) FROM Person;
+Вернет среднее значение age.
+
+Django
+
+>>> from django.db.models import Avg
+>>> Person.objects.all().aggregate(Avg('age'))
+{'age__avg': 50}
+Агрегация данных функция SUM
+SQL
+
+SELECT SUM(age) FROM Person;
+Вернет сумму всех значений столбца age.
+
+Django
+
+>>> from django.db.models import Sum
+>>> Person.objects.all().aggregate(Sum('age'))
+{'age__sum': 5050}
+Агрегация данных функция COUNT
+SQL
+
+SELECT COUNT(*) FROM Person;
+Посчитает все записи таблицы Person.
+
+Django
+
+Person.objects.count()
+На этом думаю можно закончить.
+
+У Django ORM есть свои плюсы и минусы перед чистым SQL. Но определенно работая с фреймворком Django  лучше использовать ORM.

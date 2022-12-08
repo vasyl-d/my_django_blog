@@ -43,9 +43,11 @@ html {
     bottom: 10%;
 }
 .carousel-inner {
-    min-height: 20em; max-height: 40em;
+    min-height: 20em;
+    max-height: 40em;
 }
 .carousel-item {
+    min-height: 20em;
     height: 90%;
 }
 
