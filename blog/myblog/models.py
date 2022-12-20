@@ -19,3 +19,13 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+class FeedBack(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateField(default=timezone.now)
+
+    def __str__(self) -> str:
+        return self.subject
