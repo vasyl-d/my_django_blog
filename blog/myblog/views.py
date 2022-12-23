@@ -1,11 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.core.paginator import Paginator
-from .models import Post
+from .models import Post, Tag
 from .forms import SigUpForm, SignInForm, FeedBackForm
 from django.contrib.auth import login
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.mail import send_mail, BadHeaderError
+# from django.core.mail import send_mail, BadHeaderError
 from django.db.models import Q
 
 
@@ -110,4 +110,13 @@ class SearchResultsView(View):
             'title': 'Поиск',
             'results': page_obj,
             'count': paginator.count
+        })
+
+class TagView(View):
+    def get(self, request, slug, *args, **kwargs):
+        tag = get_object_or_404(Tag, url=slug)
+        posts = Post.objects.filter(tags=tag)
+        return render(request, 'myblog/tag.html', context={
+            'title': f'#ТЕГ {tag}',
+            'posts': posts
         })

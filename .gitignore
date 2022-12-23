@@ -5,3 +5,5 @@ migrations
 *.pyc
 blog/myblog/__pycache__/urls.cpython-310.pyc
 blog/myblog/__pycache__/views.cpython-310.pyc
+blog/myblog/__pycache__/admin.cpython-310.pyc
+.gitignore
