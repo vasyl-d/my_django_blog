@@ -1,5 +1,5 @@
 from django import forms
-from .models import FeedBack
+from .models import FeedBack, Comment
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
@@ -119,3 +119,15 @@ class FeedBackForm(forms.Form):
             message = self.cleaned_data['message']
         )
         feedback.save()
+
+class CommentForm(forms.ModelForm):
+
+    class Meta:
+        model = Comment
+        fields = ('text',)
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3
+            }),
+        }
