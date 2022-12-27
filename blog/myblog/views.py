@@ -139,3 +139,8 @@ class TagView(View):
             'title': f'#ТЕГ {tag}',
             'posts': posts
         })
+
+def del_comment(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    comment.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

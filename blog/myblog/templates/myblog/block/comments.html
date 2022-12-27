@@ -16,10 +16,14 @@
 </div>
 {% for comment in post.comments.all %}
 <div class="media mb-4">
+
     <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
     <div class="media-body">
         <h5 class="mt-0">{{comment.username}}</h5>
         {{comment.text}}
     </div>
+    {% if user.is_authenticated and user == comment.username %}
+        <a href="{%url 'del_comment' comment.id %}" ><button type="button" class="d-flex btn btn-danger" type="submit">Delete</button></a>
+    {% endif %}
 </div>
 {% endfor %}
