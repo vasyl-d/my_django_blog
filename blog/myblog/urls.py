@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import MainView, PostDetailView, SignUpView, SignInView, FeedBackView, SuccessView, SearchResultsView, TagView
+from .views import MainView, PostDetailView, SignUpView, SignInView, FeedBackView, SuccessView, SearchResultsView, TagView, del_comment
 from django.contrib.auth.views import LogoutView
 from django.conf import settings
 
@@ -12,5 +12,6 @@ urlpatterns = [
     path('contact/', FeedBackView.as_view(), name='contact'),
     path('contact/success/', SuccessView.as_view(), name='success'),
     path('search/', SearchResultsView.as_view(), name='search_results'),
-    path('tag/<slug>/', TagView.as_view(), name="tag")
+    path('tag/<slug>/', TagView.as_view(), name="tag"), 
+    path('comment/<int:comment_id>/delete/', del_comment, name='del_comment')
 ]
