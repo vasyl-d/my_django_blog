@@ -1,7 +1,9 @@
 __pycache__/
+blog/myblog/__pycache__/
 myvenv/
 migrations/
 *.pyc
 .gitignore
 myvenv/
 .idea/
+blog/myblog/__pycache__/views.cpython-310.pyc

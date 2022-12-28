@@ -3,9 +3,8 @@ from django.views import View
 from django.core.paginator import Paginator
 from .models import Post, Tag, Comment
 from .forms import SigUpForm, SignInForm, FeedBackForm, CommentForm
-from django.contrib.auth import login
-from django.http import HttpResponseRedirect, HttpResponse
-# from django.core.mail import send_mail, BadHeaderError
+from django.contrib.auth import login, authenticate
+from django.http import HttpResponseRedirect
 from django.db.models import Q
 
 
