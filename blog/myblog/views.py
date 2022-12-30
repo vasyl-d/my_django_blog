@@ -143,6 +143,7 @@ def del_comment(request, comment_id):
     # needed to checking if user is author of this comment
     username = request.user
     comment = get_object_or_404(Comment, pk=comment_id)
+
     if comment.username == username:
         comment.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
